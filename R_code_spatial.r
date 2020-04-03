@@ -46,8 +46,33 @@ install.packages("ggplot2")
 
 library(ggplot2)
 
+#load the previous session
+load("/Users/giacomotrotta/lab/R_code_spatial.RData")
 
+ls() #list, to check if i'm working with the correct data (in this case I will see "Covid")
 
+library(ggplot2)
+#in ggplot2 c'è un dataframe chiamoato mpg cpn dei dati su vetture
+data(mpg)
+
+head(mpg) #vedo le colonne e i relativi titoli per scegliere cosa plottare
+#3 key components: data, aes, geometry. geometry è una parte separata, va aggiunta col +
+ggplot(mpg, aes(x=displ,y=hwy)) + geom_point()
+#let's change the geometry of this graphs 
+ggplot(mpg, aes(x=displ,y=hwy)) + geom_line() #putting lines within the dots
+ggplot(mpg, aes(x=displ,y=hwy)) + geom_polygon() #fa poligoni tra i punti
+
+#now we can try with covid data
+head(covid)
+ggplot(covid, aes(x=lon, y=lat, size=cases)) + geom_point()#size esagera la diemnsione dei punti in base ai casi
+
+#nel mio mac da errore -> Error in UseMethod("depth") : no applicable method for 'depth' applied to an object of class "NULL"
+#per risolverlo aggiro il problema
+#assegno un oggetto al plot
+graphs <- ggplot(covid, aes(x=lon, y=lat, size=cases)) + geom_point()
+#poi plotto l'oggetto
+plot(graphs)  
+#in ogni caso internet dice che per i mac è un errore comune. Basta chiudere R e riaprirlo e funziona
 
 
 
