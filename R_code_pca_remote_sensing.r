@@ -84,6 +84,7 @@ plot(difpca$PC1,col=cldif)
 
 #non so come mai ma cambia il nome da PC1 a layer.1 quindi. per me funziona il comando
 plot(difpca$layer.1,col=cldif)
+#controllare questa parte finale
 
 
 
