@@ -75,16 +75,19 @@ plotRGB(p224r63_1988_pca$map, r=1, g=2, b=3, scale=1000, stretch="Lin")
 #ora faccio le differenze tra le due immagini 
 
 difpca <- p224r63_2011_pca$map - p224r63_1988_pca$map #sottrae ogni pixel tra 2011 e 1988 per ogni component
-
 plot(difpca)
 cldif <- colorRampPalette(c('blue','black','yellow'))(100)
 plot(difpca, col=cldif)
 difpca
 plot(difpca$PC1,col=cldif)
 
-#non so come mai ma cambia il nome da PC1 a layer.1 quindi. per me funziona il comando
+#non so come mai ma cambia il nome da PC1 a layer.1 quindi per me funziona il comando
 plot(difpca$layer.1,col=cldif)
 #controllare questa parte finale
+#difpca <- p224r63_2011_pca$map - p224r63_1988_pca$map
+#plot(difpca)
+#plot(difpca$PC1,col=cldif) 
+
 
 
 
