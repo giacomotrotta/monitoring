@@ -29,4 +29,28 @@ pdf("faPAR.pdf")
 levelplot(faPAR10)
 dev.off()
 
+##########continuazione
+
+#tenere a mente che da copernivìcus i file che ottengo pesano 2gb a immagine. 
+#quella che stiamo usando pesa molto meno. é già stata elaborata
+
+library(raster)
+library(rasterdiv)
+library(rasterVis)
+
+writeRaster(copNDVI, "copNDVI.tif") #5.5 MB invece che 2 GB
+
+#exercise faPAR levelplot
+levelplot(faPAR10) #fapar fraction of photosyntesis. 
+#La radiazione che arriva dal sole e che è usata esplicitamente per la fotosintesi
+
+
+
+
+
+
+
+
+
+
 
