@@ -43,4 +43,50 @@ plot(sd_snt, col=cl)
 #si vede le differenze. Dove l'immagine è più uniforme la deviazione standard è più bassa.
 #nei passaggi tra un ecosistema e un altro la sd è più alta
 
+################# cladonia example
+
+library(raster)
+library(RStoolbox)
+
+setwd("/Users/giacomotrotta/lab")
+clad <- brick("cladonia_stellaris_calaita.JPG") #serve per brickare l'immagine
+
+plotRGB(clad, 1, 2, 3, stretch="Lin") #si vede l'immagine a colorni "naturali"
+
+window <- matrix(1, nrow=3, ncol=3) #l'1 assegna il valore 1 alla mnstra matrice. va bene nel nostro caso ma non sempre
+window
+
+pairs(clad)
+
+cladpca <- rasterPCA(clad) #faccio pca di clad
+cladpca
+
+summary(cladpca$model) #98% of information are related to the 1 component
+
+plotRGB(cladpca$map, 1, 2, 3, stretch="Lin") #si vedono molto bene i diversi oggetti della foto, la neve per esempio, il muschio è marrone, ecc..
+
+sd_clad <- focal(cladpca$map$PC1, w=window, fun=sd)
+
+PC1_agg <- aggregate(cladpca$map$PC1, fact=10) #aggrego i pixel
+sd_clad_agg <- focal(PC1_agg, w=window, fun=sd)
+
+
+par(mfrow=c(1,2)
+cl <- colorRampPalette(c('yellow','violet','black'))(100)  
+plot(sd_clad, col=cl)
+plot(sd_clad_agg, col=cl)    
+    
+    
+    
+    
+
+
+
+    
+    
+
+ 
+
+
+
 
