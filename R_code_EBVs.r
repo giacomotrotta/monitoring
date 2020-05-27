@@ -71,10 +71,16 @@ PC1_agg <- aggregate(cladpca$map$PC1, fact=10) #aggrego i pixel
 sd_clad_agg <- focal(PC1_agg, w=window, fun=sd)
 
 
-par(mfrow=c(1,2)
+par(mfrow=c(1,2))
 cl <- colorRampPalette(c('yellow','violet','black'))(100)  
 plot(sd_clad, col=cl)
-plot(sd_clad_agg, col=cl)    
+plot(sd_clad_agg, col=cl) #confronto le differenze tra quello aggregato e quello no
+
+plotRGB(clad, 1,2,3, stretch="lin")
+plot(sd_clad, col=cl) #vedo le differenze delle immagini vicine
+
+plotRGB(clad, 1,2,3, stretch="lin")
+plot(sd_clad_agg, col=cl)
     
     
     
