@@ -6,7 +6,7 @@ setwd("/Users/giacomotrotta/lab")
 library(ncdf4)
 library(raster)
 
-snowmay <- raster("c_gls_SCE_202005260000_NHEMI_VIIRS_V1.0.1.nc")
+snowmay <- raster("c_gls_SCE_202005260000_NHEMI_VIIRS_V1.0.1.nc") #raster importa solo una immagine, birck importa tutti i layer dell'immagine (per esempio quando ho diverse bande)
 #warning message dice che non è una mappa del mondo intero, ma solo una parte ma non è un problema
 cl <- colorRampPalette(c('darkblue','blue','light blue'))(100) 
 
@@ -61,18 +61,46 @@ plot(predicted.snow.2025.norm, col=cl)
 load("/Users/giacomotrotta/lab/snow/lecture.RData") #carico i dati della scorsa lezione
 
 #exercise plot together all the graphs
-listsnow <- list.files(pattern="snow")
+
+listsnow <- list.files(pattern="snow") #ho rinominato la tiff di prediction afficnhè avesse snow nel nome, altrimenti non la trovava
 importsnow <- lapply(listsnow, raster) 
 snow.multitemp <- stack(importsnow)
+plot(snow.multitemp, col=cl)
 
-export <- plot(snow.multitemp, col=cl)
-PDF
+pdf("variation_snow_cover.pdf") #così faccio una stampa in pdf del risultato
+plot(snow.multitemp, col=cl)
+dev.off()
 
 #sopra ho fatto io, sotto è come fa il prof
 
+rlist <- list.files(pattern="snow") #faccio la lista dei nomi
+rlist
 
+import <- lapply(rlist, raster) 
+snow.multitemp <- stack(import) #stack mette tutt come una pila unica
+plot(snow.multitemp, col=cl)
 
+prediction <- raster("predicted.2025.norm.tif")
+plot(prediction, col=cl)
 
+#come inviare i rislutati
+writeRaster(prediction, "final.tif") #viene fuori la prediction in formato tif, il contrario di raster. Infatti questa esporta da R alla folder e non viceversa come la funzione raster
+
+#final stack
+
+final.stack <- stack(snow.multitemp, prediction) #metto assieme tutto quello che ho fatto
+plot(final.stack, col=cl)
+
+#esporto il grafico
+
+pdf("my_final_graph.pdf") #così faccio una stampa in pdf del risultato
+plot(final.stack, col=cl)
+dev.off()
+
+#ora in png
+png("my_final_graph.png") #si possono aggiungere un sacco di altre specifiche, ad esempio larghezza, pixel, ecc...
+plot(final.stack, col=cl)
+dev.off()
 
 
 
