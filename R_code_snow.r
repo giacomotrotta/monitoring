@@ -55,6 +55,23 @@ plot(snow.multitemp, col=cl) #molte meno linee
 source("prediction.r") #file con lo script per fare la predizione fatto dal prof
 #in generale source prende il file e lo usa per fare il codice
 #posso far partire qualsiasi codice così
+plot(predicted.snow.2025.norm, col=cl)
+##############
+
+load("/Users/giacomotrotta/lab/snow/lecture.RData") #carico i dati della scorsa lezione
+
+#exercise plot together all the graphs
+listsnow <- list.files(pattern="snow")
+importsnow <- lapply(listsnow, raster) 
+snow.multitemp <- stack(importsnow)
+
+export <- plot(snow.multitemp, col=cl)
+PDF
+
+#sopra ho fatto io, sotto è come fa il prof
+
+
+
 
 
 
