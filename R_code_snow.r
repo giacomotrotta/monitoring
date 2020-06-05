@@ -42,7 +42,7 @@ plot(snow2020, col=cl)
 #si usa la funzione lapply
 
 rlist <- list.files(pattern="snow") #fa la lista di tutti i file nella cartella snow con come nome qualcosa che tontenga "snow"
-import <- lapply(rlist, raster) 
+import <- lapply(rlist, raster) #applica una certa funzione a una lista di file (qui la funzione rasetr alla mia rlist)
 #stack mette tutt come una pila unica
 snow.multitemp <- stack(import)
 
