@@ -50,9 +50,11 @@ m1 <- sdm(Occurrence ~ elevation + precipitation + temperature + vegetation, dat
 #prediction
 p1 <- predict(m1, newdata=preds) #dati da m1, newdata son i predictors
 plot(p1, col=cl)
-points(species[species$Occurrence == 1,], pch=16)
+points(species[species$Occurrence == 1,], pch=16) #a colori vedo la probabilitàm di trovare la specie. Ovviamente non è precisa la predizione perchè in alcuni punti a probabilità bassa di fatto so che ho trovato la specie.
 
+s1 <- stack(preds, p1)
 
+plot(s1, col=cl) #mette assieme i predictor e la predizione finale. 
 
 
 
