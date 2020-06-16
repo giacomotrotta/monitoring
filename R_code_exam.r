@@ -5,7 +5,7 @@
 #3.  R code for spatial view of point
 #4.  R code for multivariate analysis
 #5.  R code pca remote sensing
-#6. 
+#6.  Point pattern analysis
 #7.  R code for remote sensing data analysis
 #8.  R code to view biomass over the world and calculate changese in ecosystem functions
 #9.  R code ecosystem reflectance
@@ -14,7 +14,8 @@
 #12. R code snow cover
 #13. R code NO2
 #14. R code interpolation with our data
-#15.
+#15. Species distribution modelling
+#16. How to modify images
 
 #######################################################################
 
@@ -303,8 +304,74 @@ plot(difpca$layer.1,col=cldif)
 ####################################################################
 ####################################################################
 
-#6.
+#6. Point pattern analysis
+#point pattern analysis: density map
 
+install.packages("spatstat")
+library(spatstat)
+
+attach(covid)
+head(covid)
+
+covids <- ppp(lon, lat, c(-180,180), c(-90,90)) #c da i range delle variabili 
+
+?ppp #da info su cosa posso scrivere in ppp
+
+#se non voglio attaccare covid basta aggiungere covid$ a ogni variabile, es covid$lon
+
+d <- density(covids) #mappa costruita prossimo passaggio la mostro
+
+plot(d)
+points(covids) #devo tenere la finestra del grafico aperto altrimenti non va
+
+#nuovalezione
+
+#carico la vecchia sessione
+load("/Users/giacomotrotta/lab/R_code_spatial.RData")
+setwd("Users/giacomotrotta/lab")
+library(spatstat)
+plot(d)
+points(covids)
+
+#ora aggiungo le linee di costa per vedere la mappa rapportata ai territori
+install.packages("rgdal")
+library(rgdal)
+
+#ora importo le coastline. è strutturata così ad esempio (x0y0,x1y1...)
+
+coastlines <- readOGR("ne_10m_coastline.shp") #OGR in maiuscolo altrimenti non funziona
+
+plot(d)
+points(covids)
+plot(coastlines, add=T) #add means add the line to the previous image
+
+#change of the colour
+cl <- colorRampPalette(c("yellow", "orange", "red")) (100) 
+#decido quali saranno i colori relativi alla più alta densità e alla più bassa
+#sopra va dal giallo al rosso, il 100 indica che mette. 100 colori tra il giallo e il rosso (gradazione)
+
+plot(d, col=cl, main="Density of covid-19") #assegno come colore l'oggetto cl che è associato a una funzionae di colori
+points(covids)
+plot(coastlines, add=T)
+
+#exercise: new colour ramp palette
+cl2 <- colorRampPalette(c("light green", "yellow", "orange", "red")) (100) #posso mettere quanti colori voglio
+
+#export this map in PDF
+pdf("covid_density.pdf")
+cl2 <- colorRampPalette(c("light green", "yellow", "orange", "red")) (100)
+plot(d, col=cl2, main="Density of covid-19") 
+points(covids)
+plot(coastlines, add=T)
+dev.off() #chiudo la finestra così ho il pdf. posso fare la stessa cosa col png
+#pdf è meglio, non rovina la qualità dell'immagine
+
+png("covid_density.png")
+cl2 <- colorRampPalette(c("light green", "yellow", "orange", "red")) (100)
+plot(d, col=cl2, main="Density of covid-19") 
+points(covids)
+plot(coastlines, add=T)
+dev.off()
 
 ####################################################################
 ####################################################################
@@ -1016,11 +1083,91 @@ points(inp.psam.ppp)
 ####################################################################
 ####################################################################
 
+#15. Species distribution modelling
+
+install.packages("sdm")
+
+library(sdm)
+library(raster) #predictors
+library(rgdal) #species
+
+file <- system.file("external/species.shp", package="sdm") f
+species <- shapefile(file) #fa uno shp delle specie. 
+
+species
+species$Occurence #lo vedo da species
+
+plot(species[species$Occurrence == 1,],col='blue',pch=16) #significa quando l'occurence è uguale a 1, quindi presente
+points(species[species$Occurrence == 0,],col='red',pch=16) #aggiungo i punti quando la specie è assente
+
+path <- system.file("external", package="sdm")
+
+#ora faccio una  lista
+lst <- list.files(path=path, pattern='asc$', full.names = T) #pattern tutti quelli che hanno estensione asc ovvero ascii, full names dice che considero il full names quando faccio il comando
+lst
+
+preds <- stack(lst) #mette assieme tutti i file ascii che ho selezionato prima
+
+plot(preds) #si vedono i 4 parametri
+
+cl <- colorRampPalette(c('blue','orange','red','yellow')) (100)
+plot(preds, col=cl)
+
+plot(preds$elevation, col=cl)
+points(species[species$Occurrence == 1,], pch=16) #così vedo dove è presente in relazione all'elevazione. 
+
+plot(preds$temperature, col=cl)
+points(species[species$Occurrence == 1,], pch=16) #come sopra ma in relazione alla Temperatura
+
+plot(preds$precipitation, col=cl)
+points(species[species$Occurrence == 1,], pch=16)
+
+plot(preds$vegetation, col=cl)
+points(species[species$Occurrence == 1,], pch=16) #se preferisce essere coperta da altra vegetazione o no
+
+d <- sdmData(train=species, predictors=preds)
+d #si vedono le info (per esempio che abbiamo solo 1 specie
+
+m1 <- sdm(Occurrence ~ elevation + precipitation + temperature + vegetation, data=d, methods="glm") #modello con tante variabili assieme. la dipendente è sempre l'occurence, la x invece è insieme di fattori (elevazione, ecc,..)
+#data li deve prendere da d, il metodo da applicare è glm. 
+
+
+#prediction
+p1 <- predict(m1, newdata=preds) #dati da m1, newdata son i predictors
+plot(p1, col=cl)
+points(species[species$Occurrence == 1,], pch=16) #a colori vedo la probabilitàm di trovare la specie. Ovviamente non è precisa la predizione perchè in alcuni punti a probabilità bassa di fatto so che ho trovato la specie.
+
+s1 <- stack(preds, p1)
+
+plot(s1, col=cl) #mette assieme i predictor e la predizione finale. 
+
 ####################################################################
 ####################################################################
 ####################################################################
 
+#16. How to modify images
 
+setwd("/Users/giacomotrotta/lab")
+
+library(raster)
+
+library(ncdf4)
+snow <- raster("c_gls_SCE_202005260000_NHEMI_VIIRS_V1.0.1.nc")
+
+cl <- colorRampPalette(c('darkblue','blue','light blue'))(100)
+
+plot(snow, col=cl)
+
+ext <- c(0, 20, 35, 50) #definisco il vettore che farà zoom 
+zoom(snow, ext=ext) #fa zoom di estensione pari al vettore creato prima
+
+snowitaly <- crop(snow, ext) #crop taglia l'immagine, quindi qui ne faccio una nuova. Crop immagine snow di estensione ext
+
+zoom(snow, ext=drawExtent()) #il comando viene eseguito sull'immagine, si apre l'immagine e io devo disegnare col mouse lo zoom da fare
+
+####################################################################
+####################################################################
+####################################################################
 
 
 
