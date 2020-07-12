@@ -27,7 +27,7 @@ library(sp)
 data(meuse)
 
 #se uso hasthag r non legge
-#sotto mi favedere il dataset
+#sotto mi fa vedere il dataset
 meuse
 
 #funzione per vedere le prime 6 righe del dataset
@@ -115,7 +115,7 @@ bubble(meuse, "copper", main="Copper concentration", col="red") #done
 ###importing new data from iol:exercise on covid. we also build a folder lab in my user folder
 #put the file in the folder lab
 
-#setting the working directory:lab. Do it based on your operative system
+#setting the working directory:lab. i do it based on operation system
 #mac user
 setwd("/Users/giacomotrotta/lab")
 
@@ -134,7 +134,7 @@ plot(country, cases, las=3, cex.axis=0.5) #exagerate the dimension of the axis
 
 #ggplot 2 package per un grafico bello
 
-install.packages("ggplot2")
+#install.packages("ggplot2")
 
 library(ggplot2)
 
@@ -144,7 +144,7 @@ load("/Users/giacomotrotta/lab/R_code_spatial.RData")
 ls() #list, to check if i'm working with the correct data (in this case I will see "Covid")
 
 library(ggplot2)
-#in ggplot2 c'è un dataframe chiamoato mpg cpn dei dati su vetture
+#in ggplot2 c'è un dataframe chiamato mpg cpn dei dati su vetture
 data(mpg)
 
 head(mpg) #vedo le colonne e i relativi titoli per scegliere cosa plottare
@@ -218,7 +218,7 @@ library(raster)
 library(RStoolbox)
 library(ggplot2)
 
-p224r63_2011 <- brick("p224r63_2011_masked.grd") 
+p224r63_2011 <- brick("p224r63_2011_masked.grd") #brick importa l'immagine in R
 
 #le bande sono come le altre volte quindi b1 blu, b2 verde, b3 rosso, b4 infrarosso
 #b5 swir, b6 thermal, b7 swir, b8 pancromatic. swir sono medium near infrared. misurano due cose diverse b5 e b7
@@ -307,7 +307,7 @@ plot(difpca$layer.1,col=cldif)
 #6. Point pattern analysis
 #point pattern analysis: density map
 
-install.packages("spatstat")
+#install.packages("spatstat")
 library(spatstat)
 
 attach(covid)
@@ -381,14 +381,15 @@ dev.off()
 #7. R code for remote sensing data analysis
 
 #raster
-install.packages("raster")
-install.packages("RStoolbox")
+#install.packages("raster")
+#install.packages("RStoolbox")
 
 setwd("/Users/giacomotrotta/lab")
 library(raster)
 
 #importo le immagini della cartella lab
-p224r63_2011 <- brick("p224r63_2011_masked.grd") #path=p r=row per trovare l'immagine del satellite in modo univocp
+p224r63_2011 <- brick("p224r63_2011_masked.grd") 
+#path=p r=row per trovare l'immagine del satellite in modo univoco
 
 plot(p224r63_2011) #ogni banda ha un significato, 1=blu, 2=verde, 3=rosso, 4=near infrarosso, 5= middle infrared, 6=termal infrared 7=middle infrared
 
@@ -433,7 +434,7 @@ dev.off()
 plotRGB(p224r63_2011, r=3, g=2, b=1, stretch="Lin") #stretch streccha i colori più che si può
 #Lin va scritto in maiuscolo
 
-#per rendere più visibile la vegetazione uso il near infrared(so che le foglie riflettono quella lunghezza bene
+#per rendere più visibile la vegetazione uso il near infrared(so che le foglie riflettono quella lunghezza bene)
 
 #siccome posso usare solo 3 bande elimino il blu
 
@@ -520,8 +521,8 @@ p224r63_2011 #per avere info sull'immagine
 #chemical cycling
 #proxies
 
-install.packages("rasterdiv")
-install.packages("rasterVis")
+#install.packages("rasterdiv")
+#install.packages("rasterVis")
 
 library(rasterVis)
 library(rasterdiv)
@@ -779,7 +780,7 @@ window
 
 
 sd_snt <- focal(sntpca$map$PC1, w=window, fun=sd) #focal arriva da raster package, devo usare il dollaro per collegare le parti tra loro
-# w dice la finestra da usare (usiamo quella che abbiamo appena creato. Fun sta per function. 
+# w dice la finestra da usare (usiamo quella che abbiamo appena creato). Fun sta per function. 
 #metto fun=standard deviation. ? per vedere le altre funzioni
 
 cl <- colorRampPalette(c('dark blue','green','orange','red'))(100) 
@@ -801,7 +802,7 @@ clad <- brick("cladonia_stellaris_calaita.JPG") #serve per brickare l'immagine
 
 plotRGB(clad, 1, 2, 3, stretch="Lin") #si vede l'immagine a colorni "naturali"
 
-window <- matrix(1, nrow=3, ncol=3) #l'1 assegna il valore 1 alla mnstra matrice. va bene nel nostro caso ma non sempre
+window <- matrix(1, nrow=3, ncol=3) #l'1 assegna il valore 1 alla nostra matrice. va bene nel nostro caso ma non sempre
 window
 
 pairs(clad)
@@ -843,7 +844,7 @@ setwd("/Users/giacomotrotta/lab")
 library(ncdf4)
 library(raster)
 
-snowmay <- raster("c_gls_SCE_202005260000_NHEMI_VIIRS_V1.0.1.nc") #raster importa solo una immagine, birck importa tutti i layer dell'immagine (per esempio quando ho diverse bande)
+snowmay <- raster("c_gls_SCE_202005260000_NHEMI_VIIRS_V1.0.1.nc") #raster importa solo una immagine, brick importa tutti i layer dell'immagine (per esempio quando ho diverse bande)
 #warning message dice che non è una mappa del mondo intero, ma solo una parte ma non è un problema
 cl <- colorRampPalette(c('darkblue','blue','light blue'))(100) 
 
@@ -879,7 +880,7 @@ plot(snow2020, col=cl)
 #si usa la funzione lapply
 
 rlist <- list.files(pattern="snow") #fa la lista di tutti i file nella cartella snow con come nome qualcosa che tontenga "snow"
-import <- lapply(rlist, raster) #applica una certa funzione a una lista di file (qui la funzione rasetr alla mia rlist)
+import <- lapply(rlist, raster) #applica una certa funzione a una lista di file (qui la funzione raster alla mia rlist)
 #stack mette tutt come una pila unica
 snow.multitemp <- stack(import)
 
@@ -899,7 +900,7 @@ load("/Users/giacomotrotta/lab/snow/lecture.RData") #carico i dati della scorsa 
 
 #exercise plot together all the graphs
 
-listsnow <- list.files(pattern="snow") #ho rinominato la tiff di prediction afficnhè avesse snow nel nome, altrimenti non la trovava
+listsnow <- list.files(pattern="snow") #ho rinominato la tiff di prediction affinchè avesse snow nel nome, altrimenti non la trovava
 importsnow <- lapply(listsnow, raster) 
 snow.multitemp <- stack(importsnow)
 plot(snow.multitemp, col=cl)
@@ -908,13 +909,13 @@ pdf("variation_snow_cover.pdf") #così faccio una stampa in pdf del risultato
 plot(snow.multitemp, col=cl)
 dev.off()
 
-#sopra ho fatto io, sotto è come fa il prof
+#sopra ho fatto io, sotto è come facciamo a lezione
 
 rlist <- list.files(pattern="snow") #faccio la lista dei nomi
 rlist
 
 import <- lapply(rlist, raster) 
-snow.multitemp <- stack(import) #stack mette tutt come una pila unica
+snow.multitemp <- stack(import) #stack mette tutto come una pila unica
 plot(snow.multitemp, col=cl)
 
 prediction <- raster("predicted.2025.norm.tif")
@@ -951,7 +952,7 @@ setwd("/Users/giacomotrotta/lab/NO2/") #ho precedentemente messo tutti i file ne
 #esercizio, importare le immagini EN1-13
 
 rlist <- list.files(pattern="EN") 
-import <- lapply(rlist, raster) #applica una certa funzione a una lista di file (qui la funzione rasetr alla mia rlist)
+import <- lapply(rlist, raster) #applica una certa funzione a una lista di file (qui la funzione raster alla mia rlist)
 EN <- stack(import)
 
 cl <- colorRampPalette(c('red','orange','yellow'))(100) 
@@ -992,10 +993,10 @@ boxplot(EN, outline=F, horizontal=T, axes=T) #si nota che il maximum value cala 
 
 ###
 plot(EN$EN_0001, EN$EN_0013) #pixel immagine 1 con pixel 13. il concetto è che se su 01 ho valore 255 per esempio e mi aspetto che cali allora in 13 avro 200(per esempio). Così si vede se cambia no2 o meno
-#la maggiorparte dei valori alti dunque deve essere sotto la bisettrice 1e 3 quadrante (y=x). Se è sopra inveve NO2 non è calata
+#la maggior parte dei valori alti dunque deve essere sotto la bisettrice 1 e 3 quadrante (y=x). Se è sopra inveve NO2 non è calata
 abline(0, 1, col="red") #aggiungo la bisettrice Y=bx + a , a=0 e b=1
 
-#si vede che il trend è sotto la bisettrice e quindi c'è un trend di decrecsita tra en1 e en 13 nella concentrazione di no2
+#si vede che il trend è sotto la bisettrice e quindi c'è un trend di decrescita tra en1 e en 13 nella concentrazione di no2
 
 ### provo a fare la stessa cosa per il lavoro su snow
 
@@ -1256,6 +1257,7 @@ dev.off()
 
 ###levelplot
 levelplot(NDVI20_FVG)
+levelplot(NDVI00_FVG)
 #levelplot makes the average of the values on the orizontal and on the vertical line of pixels and shows it as graph on the side of the image
 
 ### Difference of NDVI between 2020 and 2000 
@@ -1294,7 +1296,9 @@ plot(LAI20_FVG, main="LAI FVG 2020")
 dif_LAI <- LAI20_FVG - LAI00_FVG
 plot(dif_LAI, col=cl) #as before tha red show a decrease, the blue an increase
 
-
+#levelplot
+levelplot(LAI20_FVG)
+levelplot(LAI00_FVG)
 
 
 #####FCOVER
@@ -1323,6 +1327,11 @@ plot(FCOVER00_FVG)
 #difference FCVOVER
 dif_FCOVER <- FCOVER20_FVG - FCOVER00_FVG
 plot(dif_FCOVER, col=cl)
+
+#levelplot
+
+levelplot(FCOVER20_FVG)
+levelplot(FCOVER00_FVG)
 
 
 
