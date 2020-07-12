@@ -1169,6 +1169,165 @@ zoom(snow, ext=drawExtent()) #il comando viene eseguito sull'immagine, si apre l
 ####################################################################
 ####################################################################
 
+##R_code_exam
+
+library(ncdf4)
+library(raster)
+library(rasterVis)
+library(rasterdiv)
+library(rgdal)
+library(gdalUtils)
+
+#####################################
+
+
+FVG_shp <- readOGR("/Users/giacomotrotta/lab_exam/shp/REGIONE_FVGPolygon.shp") #to read the shape file with the border or fvg region
+plot(FVG_shp) #to see the border
+
+setwd("/Users/giacomotrotta/lab_exam/NDVI") #setwd where i have file of NDVI
+
+NDVI20 <- raster("c_gls_NDVI_202006110000_GLOBE_PROBAV_V2.2.1.nc") #to import the image
+plot(NDVI20) #this will show the world NDVI for 2020 (period 11.06/20.06)
+
+proj4string(FVG_shp)
+proj4string(NDVI20)
+extshp <- spTransform(FVG_shp, proj4string(NDVI20)) #this is to explain the limit of my extension (i will crop after the map with that extension)
+NDVI20_FVG <- mask(crop(NDVI20, extent(extshp)), extshp) #this will crop the NDVI with the border of FVG
+
+plot(NDVI20_FVG)
+
+## now I repeat tha same code (note that the period is always the same but for the years 2015, 2010, 2005, 2000)
+
+NDVI15 <- raster("c_gls_NDVI_201506110000_GLOBE_PROBAV_V2.2.1.nc")
+plot(NDVI15)
+
+proj4string(NDVI15)
+extshp <- spTransform(FVG_shp, proj4string(NDVI15)) 
+NDVI15_FVG <- mask(crop(NDVI15, extent(extshp)), extshp)
+
+plot(NDVI15_FVG)
+
+####
+NDVI10 <- raster("c_gls_NDVI_201006110000_GLOBE_VGT_V2.2.1.nc")
+plot(NDVI10)
+
+proj4string(NDVI10)
+extshp <- spTransform(FVG_shp, proj4string(NDVI10)) 
+NDVI10_FVG <- mask(crop(NDVI10, extent(extshp)), extshp)
+
+plot(NDVI10_FVG)
+###
+NDVI05 <- raster("c_gls_NDVI_200506110000_GLOBE_VGT_V2.2.1.nc")
+plot(NDVI05)
+
+proj4string(NDVI05)
+extshp <- spTransform(FVG_shp, proj4string(NDVI05)) 
+NDVI05_FVG <- mask(crop(NDVI05, extent(extshp)), extshp)
+
+plot(NDVI05_FVG)
+###
+NDVI00 <- raster("c_gls_NDVI_200006110000_GLOBE_VGT_V2.2.1.nc")
+plot(NDVI00)
+
+proj4string(NDVI00)
+extshp <- spTransform(FVG_shp, proj4string(NDVI00)) 
+NDVI00_FVG <- mask(crop(NDVI00, extent(extshp)), extshp)
+
+plot(NDVI00_FVG)
+
+####
+
+par(mfrow=c(2,3)) #to watch the graphs all together
+plot(NDVI00_FVG, main="NDVI FVG 2000") #main will add a title to my graph
+plot(NDVI05_FVG, main="NDVI FVG 2005")
+plot(NDVI10_FVG, main="NDVI FVG 2010")
+plot(NDVI15_FVG, main="NDVI FVG 2015")
+plot(NDVI20_FVG, main="NDVI FVG 2020")
+
+###now I save it as PDF
+pdf("NDVI 2000-2020 FVG.pdf")
+par(mfrow=c(2,3))
+plot(NDVI00_FVG, main="NDVI FVG 2000")
+plot(NDVI05_FVG, main="NDVI FVG 2005")
+plot(NDVI10_FVG, main="NDVI FVG 2010")
+plot(NDVI15_FVG, main="NDVI FVG 2015")
+plot(NDVI20_FVG, main="NDVI FVG 2020")
+dev.off()
+
+###levelplot
+levelplot(NDVI20_FVG)
+#levelplot makes the average of the values on the orizontal and on the vertical line of pixels and shows it as graph on the side of the image
+
+### Difference of NDVI between 2020 and 2000 
+dif_NDVI <- NDVI20_FVG - NDVI00_FVG
+cl <- colorRampPalette(c('darkred','white','darkblue'))(100) #negative value will have red colour, positive ones will be blue
+#that means that red is where the NDVI decreased during related to 2000s while blue is where the NDVI improved
+plot(dif_NDVI, col=cl)
+
+
+###LAI
+setwd("/Users/giacomotrotta/lab_exam/LAI") #where i have file of LAI
+
+LAI20 <- raster("c_gls_LAI-RT2_202005100000_GLOBE_PROBAV_V2.0.1.nc")
+plot(LAI20)
+
+proj4string(LAI20)
+extshp <- spTransform(FVG_shp, proj4string(LAI20)) 
+LAI20_FVG <- mask(crop(LAI20, extent(extshp)), extshp)
+
+plot(LAI20_FVG)
+##
+LAI00 <- raster("c_gls_LAI_200005100000_GLOBE_VGT_V2.0.2.nc")
+plot(LAI00)
+
+proj4string(LAI00)
+extshp <- spTransform(FVG_shp, proj4string(LAI00)) 
+LAI00_FVG <- mask(crop(LAI00, extent(extshp)), extshp)
+
+plot(LAI00_FVG)
+##
+par(mfrow=c(1,2))
+plot(LAI00_FVG, main="LAI FVG 2000")
+plot(LAI20_FVG, main="LAI FVG 2020")
+
+#Difference LAI
+dif_LAI <- LAI20_FVG - LAI00_FVG
+plot(dif_LAI, col=cl) #as before tha red show a decrease, the blue an increase
+
+
+
+
+#####FCOVER
+setwd("/Users/giacomotrotta/lab_exam/FCOVER") #where i have file of FCOVER
+
+FCOVER20 <- raster("c_gls_FCOVER-RT2_202005100000_GLOBE_PROBAV_V2.0.1.nc")
+plot(FCOVER20)
+
+proj4string(FCOVER20)
+extshp <- spTransform(FVG_shp, proj4string(FCOVER20)) 
+FCOVER20_FVG <- mask(crop(FCOVER20, extent(extshp)), extshp)
+
+plot(FCOVER20_FVG)
+
+#
+
+FCOVER00 <- raster("c_gls_FCOVER_200005100000_GLOBE_VGT_V2.0.2.nc")
+plot(FCOVER00)
+
+proj4string(FCOVER00)
+extshp <- spTransform(FVG_shp, proj4string(FCOVER00)) 
+FCOVER00_FVG <- mask(crop(FCOVER00, extent(extshp)), extshp)
+
+plot(FCOVER00_FVG)
+
+#difference FCVOVER
+dif_FCOVER <- FCOVER20_FVG - FCOVER00_FVG
+plot(dif_FCOVER, col=cl)
+
+
+
+
+
 
 
 
