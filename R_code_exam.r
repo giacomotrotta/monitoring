@@ -1181,14 +1181,89 @@ library(gdalUtils)
 
 #####################################
 
+###LAI
+setwd("/Users/giacomotrotta/lab_exam/LAI") #where i have file of LAI
+#all the file have the same time range (11/03 - 09/07)
+
+LAI20 <- raster("c_gls_LAI-RT2_202005100000_GLOBE_PROBAV_V2.0.1.nc") #to import the image
+#plot(LAI20)
+
+pdf("LAI 2020.pdf")
+plot(LAI20, main="Leaf Area Index 2020")
+dev.off()
 
 FVG_shp <- readOGR("/Users/giacomotrotta/lab_exam/shp/REGIONE_FVGPolygon.shp") #to read the shape file with the border or fvg region
 plot(FVG_shp) #to see the border
 
-setwd("/Users/giacomotrotta/lab_exam/NDVI") #setwd where i have file of NDVI
+proj4string(LAI20)
+extshp <- spTransform(FVG_shp, proj4string(LAI20)) 
+LAI20_FVG <- mask(crop(LAI20, extent(extshp)), extshp)
 
-NDVI20 <- raster("c_gls_NDVI_202006110000_GLOBE_PROBAV_V2.2.1.nc") #to import the image
-plot(NDVI20) #this will show the world NDVI for 2020 (period 11.06/20.06)
+plot(LAI20_FVG)
+##
+LAI00 <- raster("c_gls_LAI_200005100000_GLOBE_VGT_V2.0.2.nc")
+#plot(LAI00)
+
+proj4string(LAI00)
+extshp <- spTransform(FVG_shp, proj4string(LAI00)) 
+LAI00_FVG <- mask(crop(LAI00, extent(extshp)), extshp)
+
+plot(LAI00_FVG)
+
+LAI10 <- raster("c_gls_LAI_201005100000_GLOBE_VGT_V2.0.1.nc")
+#plot(LAI10)
+
+proj4string(LAI10)
+extshp <- spTransform(FVG_shp, proj4string(LAI10)) 
+LAI10_FVG <- mask(crop(LAI10, extent(extshp)), extshp)
+
+plot(LAI10_FVG)
+
+#multitemp
+
+pdf("LAI.multitemp.pdf")
+par(mfrow=c(1,3))
+plot(LAI00_FVG, main="LAI 2000")
+plot(LAI10_FVG, main="LAI 2010")
+plot(LAI20_FVG, main="LAI 2020")
+dev.off()
+
+#Difference LAI
+dif_LAI <- LAI20_FVG - LAI00_FVG
+cl <- colorRampPalette(c('darkred','white','darkblue'))(100) #negative value will have red colour, positive ones will be blue
+dif_LAI10.00 <- LAI10_FVG - LAI00_FVG
+cl <- colorRampPalette(c('darkred','white','darkblue'))(100) #negative value will have red colour, positive ones will be blue
+dif_LAI20.10 <- LAI20_FVG - LAI10_FVG
+cl <- colorRampPalette(c('darkred','white','darkblue'))(100) #negative value will have red colour, positive ones will be blue
+
+pdf("difLAI.pdf")
+par(mfrow=c(1,3))
+plot(dif_LAI10.00, col=cl, main="Difference LAI 2010/2000") #as before tha red show a decrease, the blue an increase
+plot(dif_LAI20.10, col=cl, main="Difference LAI 2020/2010")
+plot(dif_LAI, col=cl, main="Difference LAI 2020/2000")
+dev.off()
+
+
+#levelplot
+levelplot(LAI20_FVG)
+levelplot(LAI10_FVG)
+levelplot(LAI00_FVG)
+
+pdf("Levelplot LAI.pdf")
+par(mfrow=c(3,1))
+levelplot(LAI00_FVG, main="LAI FVG 2000")
+levelplot(LAI10_FVG, main="LAI FVG 2010")
+levelplot(LAI20_FVG, main="LAI FVG 2020")
+dev.off()
+
+###### NDVI
+setwd("/Users/giacomotrotta/lab_exam/NDVI") #setwd where i have file of NDVI
+#all the file have the same time range (11/06 - 20/06)
+
+NDVI20 <- raster("c_gls_NDVI_202006110000_GLOBE_PROBAV_V2.2.1.nc") 
+NDVI20 <- reclassify(NDVI20, cbind(253:255, NA)) #this will assign value NA to the water
+#plot(NDVI20) #this will show the world NDVI for 2020 (period 11.06/20.06)
+
 
 proj4string(FVG_shp)
 proj4string(NDVI20)
@@ -1197,10 +1272,15 @@ NDVI20_FVG <- mask(crop(NDVI20, extent(extshp)), extshp) #this will crop the NDV
 
 plot(NDVI20_FVG)
 
+pdf("NDVI FVG 2020.pdf")
+plot(NDVI20_FVG, main="NDVI of Friuli Venezia-Giulia 2020")
+dev.off()
+
 ## now I repeat tha same code (note that the period is always the same but for the years 2015, 2010, 2005, 2000)
 
 NDVI15 <- raster("c_gls_NDVI_201506110000_GLOBE_PROBAV_V2.2.1.nc")
-plot(NDVI15)
+NDVI15 <- reclassify(NDVI15, cbind(253:255, NA))
+#plot(NDVI15)
 
 proj4string(NDVI15)
 extshp <- spTransform(FVG_shp, proj4string(NDVI15)) 
@@ -1210,7 +1290,8 @@ plot(NDVI15_FVG)
 
 ####
 NDVI10 <- raster("c_gls_NDVI_201006110000_GLOBE_VGT_V2.2.1.nc")
-plot(NDVI10)
+NDVI10 <- reclassify(NDVI10, cbind(253:255, NA))
+#plot(NDVI10)
 
 proj4string(NDVI10)
 extshp <- spTransform(FVG_shp, proj4string(NDVI10)) 
@@ -1219,7 +1300,8 @@ NDVI10_FVG <- mask(crop(NDVI10, extent(extshp)), extshp)
 plot(NDVI10_FVG)
 ###
 NDVI05 <- raster("c_gls_NDVI_200506110000_GLOBE_VGT_V2.2.1.nc")
-plot(NDVI05)
+NDVI05 <- reclassify(NDVI05, cbind(253:255, NA))
+#plot(NDVI05)
 
 proj4string(NDVI05)
 extshp <- spTransform(FVG_shp, proj4string(NDVI05)) 
@@ -1228,7 +1310,8 @@ NDVI05_FVG <- mask(crop(NDVI05, extent(extshp)), extshp)
 plot(NDVI05_FVG)
 ###
 NDVI00 <- raster("c_gls_NDVI_200006110000_GLOBE_VGT_V2.2.1.nc")
-plot(NDVI00)
+NDVI00 <- reclassify(NDVI00, cbind(253:255, NA))
+#plot(NDVI00)
 
 proj4string(NDVI00)
 extshp <- spTransform(FVG_shp, proj4string(NDVI00)) 
@@ -1255,10 +1338,29 @@ plot(NDVI15_FVG, main="NDVI FVG 2015")
 plot(NDVI20_FVG, main="NDVI FVG 2020")
 dev.off()
 
+#we can see that between 2000 and 2010 we have a lot of difference
 ###levelplot
 levelplot(NDVI20_FVG)
 levelplot(NDVI00_FVG)
 #levelplot makes the average of the values on the orizontal and on the vertical line of pixels and shows it as graph on the side of the image
+levelplot(NDVI10_FVG)
+
+pdf("levelplotNDVI00_10_20.pdf")
+par(mfrow=c(3,1))
+levelplot(NDVI00_FVG, main="NDVI 2000")
+levelplot(NDVI10_FVG, main="NDVI 2010")
+levelplot(NDVI20_FVG, main="NDVI 2020")
+dev.off()
+
+### Difference of NDVI between 2010 and 2000 
+dif_NDVI10.00 <- NDVI10_FVG - NDVI00_FVG
+cl <- colorRampPalette(c('darkred','white','darkblue'))(100) #negative value will have red colour, positive ones will be blue
+#that means that red is where the NDVI decreased during related to 2000s while blue is where the NDVI improved
+plot(dif_NDVI10.00, col=cl)
+
+
+
+
 
 ### Difference of NDVI between 2020 and 2000 
 dif_NDVI <- NDVI20_FVG - NDVI00_FVG
@@ -1266,46 +1368,26 @@ cl <- colorRampPalette(c('darkred','white','darkblue'))(100) #negative value wil
 #that means that red is where the NDVI decreased during related to 2000s while blue is where the NDVI improved
 plot(dif_NDVI, col=cl)
 
+### Difference of NDVI between 2020 and 2010 
+dif_NDVI20.10 <- NDVI20_FVG - NDVI10_FVG
+cl <- colorRampPalette(c('darkred','white','darkblue'))(100)
+plot(dif_NDVI20.10, col=cl)
 
-###LAI
-setwd("/Users/giacomotrotta/lab_exam/LAI") #where i have file of LAI
+pdf("dif_NDVI.pdf")
+par(mfrow=c(1,3))
+plot(dif_NDVI10.00, col=cl, main="Difference NDVI 2010/2000")
+plot(dif_NDVI20.10, col=cl, main="Difference NDVI 2020/2010")
+plot(dif_NDVI, col=cl, main="Difference NDVI 2020/2000")
+dev.off()
 
-LAI20 <- raster("c_gls_LAI-RT2_202005100000_GLOBE_PROBAV_V2.0.1.nc")
-plot(LAI20)
-
-proj4string(LAI20)
-extshp <- spTransform(FVG_shp, proj4string(LAI20)) 
-LAI20_FVG <- mask(crop(LAI20, extent(extshp)), extshp)
-
-plot(LAI20_FVG)
-##
-LAI00 <- raster("c_gls_LAI_200005100000_GLOBE_VGT_V2.0.2.nc")
-plot(LAI00)
-
-proj4string(LAI00)
-extshp <- spTransform(FVG_shp, proj4string(LAI00)) 
-LAI00_FVG <- mask(crop(LAI00, extent(extshp)), extshp)
-
-plot(LAI00_FVG)
-##
-par(mfrow=c(1,2))
-plot(LAI00_FVG, main="LAI FVG 2000")
-plot(LAI20_FVG, main="LAI FVG 2020")
-
-#Difference LAI
-dif_LAI <- LAI20_FVG - LAI00_FVG
-plot(dif_LAI, col=cl) #as before tha red show a decrease, the blue an increase
-
-#levelplot
-levelplot(LAI20_FVG)
-levelplot(LAI00_FVG)
 
 
 #####FCOVER
 setwd("/Users/giacomotrotta/lab_exam/FCOVER") #where i have file of FCOVER
+#all the file have the same time range (11/03 - 09/07)
 
 FCOVER20 <- raster("c_gls_FCOVER-RT2_202005100000_GLOBE_PROBAV_V2.0.1.nc")
-plot(FCOVER20)
+#plot(FCOVER20)
 
 proj4string(FCOVER20)
 extshp <- spTransform(FVG_shp, proj4string(FCOVER20)) 
@@ -1316,7 +1398,7 @@ plot(FCOVER20_FVG)
 #
 
 FCOVER00 <- raster("c_gls_FCOVER_200005100000_GLOBE_VGT_V2.0.2.nc")
-plot(FCOVER00)
+#plot(FCOVER00)
 
 proj4string(FCOVER00)
 extshp <- spTransform(FVG_shp, proj4string(FCOVER00)) 
@@ -1324,15 +1406,46 @@ FCOVER00_FVG <- mask(crop(FCOVER00, extent(extshp)), extshp)
 
 plot(FCOVER00_FVG)
 
-#difference FCVOVER
+#
+
+FCOVER10 <- raster("c_gls_FCOVER_201005100000_GLOBE_VGT_V2.0.1.nc")
+#plot(FCOVER10)
+
+proj4string(FCOVER10)
+extshp <- spTransform(FVG_shp, proj4string(FCOVER10)) 
+FCOVER10_FVG <- mask(crop(FCOVER10, extent(extshp)), extshp)
+
+plot(FCOVER10_FVG)
+
+pdf("FCOVER.multitemp.pdf")
+par(mfrow=c(1,3))
+plot(FCOVER00_FVG, main="FCOVER 2000")
+plot(FCOVER10_FVG, main="FCOVER 2010")
+plot(FCOVER20_FVG, main="FCOVER 2020")
+dev.off()
+
+#difference FCVOVER 2020-2000
 dif_FCOVER <- FCOVER20_FVG - FCOVER00_FVG
 plot(dif_FCOVER, col=cl)
+#difference FCVOVER 2010-2000
+dif_FCOVER10.00 <- FCOVER10_FVG - FCOVER00_FVG
+plot(dif_FCOVER10.00, col=cl)
+#difference FCVOVER 2020-2010
+dif_FCOVER20.10 <- FCOVER20_FVG - FCOVER10_FVG
+plot(dif_FCOVER20.10, col=cl)
+
+pdf("dif_fcover.pdf")
+par(mfrow=c(1,3))
+plot(dif_FCOVER10.00, col=cl, main="Difference FCOVER 2010/2000")
+plot(dif_FCOVER20.10, col=cl, main="Difference FCOVER 2020/2010")
+plot(dif_FCOVER, col=cl, main="Difference FCOVER 2020/2000")
+dev.off()
 
 #levelplot
 
 levelplot(FCOVER20_FVG)
+levelplot(FCOVER10_FVG)
 levelplot(FCOVER00_FVG)
-
 
 
 
