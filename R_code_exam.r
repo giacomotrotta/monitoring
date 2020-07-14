@@ -1178,6 +1178,10 @@ library(rasterVis)
 library(rasterdiv)
 library(rgdal)
 library(gdalUtils)
+library(readxl)
+library(ggplot2)
+library(gridExtra)
+library(grid)
 
 #####################################
 
@@ -1447,27 +1451,69 @@ levelplot(FCOVER20_FVG)
 levelplot(FCOVER10_FVG)
 levelplot(FCOVER00_FVG)
 
+#####let's take a look to the rainfall condition during our satellite images
+
+setwd("/Users/giacomotrotta/lab_exam/meteo/")
+meteo <- read_excel("/USers/giacomotrotta/lab_exam/meteo/meteo.xlsx") #to read data from an excel
+View(meteo)                                                              
+
+attach(meteo) #to use this dataset
+head(meteo) #to see the name of the columns
 
 
+par(mfrow=c(1,3))
+plot(Data, mar_00)
+model_mar_00 <- mean(mar_00) #calculate the mean
+abline(a=model_mar_00, b=0, col="red") #add a red line that correspond to the mean
+plot(Data, mar_10)
+model_mar_10 <- mean(mar_10)
+plot(Data, mar_20)
+model_mar_20 <- mean(mar_20)
 
+par(mfrow=c(1,3))
+plot(Data, apr_00)
+model_apr_00 <- mean(apr_00)
+plot(Data, apr_10)
+model_apr_10 <- mean(apr_10)
+plot(Data, apr_20)
+model_apr_20 <- mean(apr_20)
 
+par(mfrow=c(1,3))
+plot(Data, mag_00)
+model_mag_00 <- mean(mag_00)
+plot(Data, mag_10)
+model_mag_10 <- mean(mag_10)
+plot(Data, mag_20)
+model_mag_20 <- mean(mag_20)
 
+#it's not a very nice graphs, let's prettify it with ggplot
 
+#########with ggplot
+mar_00_gg <- ggplot(meteo, aes(Data, mar_00)) + geom_point() + geom_abline(intercept = model_mar_00, slope = 0, color = "red", size=2 ) + coord_cartesian(ylim=c(40,230)) + labs(title = "March 2000", y="Rainfall (total mm)", x="Sample")
+mar_10_gg <- ggplot(meteo, aes(Data, mar_10)) + geom_point() + geom_abline(intercept = model_mar_10, slope = 0, color = "red", size=2 ) + coord_cartesian(ylim=c(40,230)) + labs(title = "March 2010", y=" ", x="Sample")
+mar_20_gg <- ggplot(meteo, aes(Data, mar_20)) + geom_point() + geom_abline(intercept = model_mar_20, slope = 0, color = "red", size=2 ) + coord_cartesian(ylim=c(40,230)) + labs(title = "March 2020", y=" ", x="Sample")
+#ggplot(dataset that I used, aes (x label, y label)) + geom_point(I will have point on the graph) + geom_abline(as before I put the intercept equal to mean and the slope equal to 0) + coord_cartesian(to set the limit of y label) + labs(title of the graph and the labs)
 
+pdf("mar.pdf")
+grid.arrange(mar_00_gg, mar_10_gg, mar_20_gg, ncol=3)
+dev.off()
+#
+apr_00_gg <- ggplot(meteo, aes(Data, apr_00)) + geom_point() + geom_abline(intercept = model_apr_00, slope = 0, color = "red", size=2 ) + coord_cartesian(ylim=c(10,180)) + labs(title = "April 2000", y="Rainfall (total mm)", x="Sample")
+apr_10_gg <- ggplot(meteo, aes(Data, apr_10)) + geom_point() + geom_abline(intercept = model_apr_10, slope = 0, color = "red", size=2 ) + coord_cartesian(ylim=c(10,180)) + labs(title = "April 2010", y=" ", x="Sample") 
+apr_20_gg <- ggplot(meteo, aes(Data, apr_20)) + geom_point() + geom_abline(intercept = model_apr_20, slope = 0, color = "red", size=2 ) + coord_cartesian(ylim=c(10,180)) + labs(title = "April 2020", y=" ", x="Sample")
 
+pdf("apr.pdf")
+grid.arrange(apr_00_gg, apr_10_gg, apr_20_gg, ncol=3)
+dev.off()
 
+#
+mag_00_gg <- ggplot(meteo, aes(Data, mag_00)) + geom_point() + geom_abline(intercept = model_mag_00, slope = 0, color = "red", size=2 ) + coord_cartesian(ylim=c(50,310)) + labs(title = "May 2000", y="Rainfall (total mm)", x="Sample")
+mag_10_gg <- ggplot(meteo, aes(Data, mag_10)) + geom_point() + geom_abline(intercept = model_mag_10, slope = 0, color = "red", size=2 ) + coord_cartesian(ylim=c(50,310)) + labs(title = "May 2010", y=" ", x="Sample")
+mag_20_gg <- ggplot(meteo, aes(Data, mag_20)) + geom_point() + geom_abline(intercept = model_mag_20, slope = 0, color = "red", size=2 ) + coord_cartesian(ylim=c(50,310)) + labs(title = "May 2020", y=" ", x="Sample")
 
+pdf("mag.pdf")
+grid.arrange(mag_00_gg, mag_10_gg, mag_20_gg, ncol=3)
+dev.off()
 
-
-
-
-
-
-
-
-
-
-
-
-
+###################################################################################################
 
