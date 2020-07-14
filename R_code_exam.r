@@ -1196,7 +1196,8 @@ pdf("LAI 2020.pdf")
 plot(LAI20, main="Leaf Area Index 2020")
 dev.off()
 
-FVG_shp <- readOGR("/Users/giacomotrotta/lab_exam/shp/REGIONE_FVGPolygon.shp") #to read the shape file with the border or fvg region
+FVG_shp <- readOGR("/Users/giacomotrotta/lab_exam/shp/REGIONE_FVGPolygon.shp") 
+#to read the shape file with the border or fvg region
 plot(FVG_shp) #to see the border
 
 proj4string(LAI20)
@@ -1204,6 +1205,7 @@ extshp <- spTransform(FVG_shp, proj4string(LAI20))
 LAI20_FVG <- mask(crop(LAI20, extent(extshp)), extshp)
 
 plot(LAI20_FVG)
+
 ##
 LAI00 <- raster("c_gls_LAI_200005100000_GLOBE_VGT_V2.0.2.nc")
 #plot(LAI00)
@@ -1236,9 +1238,7 @@ dev.off()
 dif_LAI <- LAI20_FVG - LAI00_FVG
 cl <- colorRampPalette(c('darkred','white','darkblue'))(100) #negative value will have red colour, positive ones will be blue
 dif_LAI10.00 <- LAI10_FVG - LAI00_FVG
-cl <- colorRampPalette(c('darkred','white','darkblue'))(100) #negative value will have red colour, positive ones will be blue
 dif_LAI20.10 <- LAI20_FVG - LAI10_FVG
-cl <- colorRampPalette(c('darkred','white','darkblue'))(100) #negative value will have red colour, positive ones will be blue
 
 pdf("difLAI.pdf")
 par(mfrow=c(1,3))
@@ -1254,7 +1254,6 @@ levelplot(LAI10_FVG)
 levelplot(LAI00_FVG)
 
 pdf("Levelplot LAI.pdf")
-par(mfrow=c(3,1))
 levelplot(LAI00_FVG, main="LAI FVG 2000")
 levelplot(LAI10_FVG, main="LAI FVG 2010")
 levelplot(LAI20_FVG, main="LAI FVG 2020")
@@ -1350,7 +1349,6 @@ levelplot(NDVI00_FVG)
 levelplot(NDVI10_FVG)
 
 pdf("levelplotNDVI00_10_20.pdf")
-par(mfrow=c(3,1))
 levelplot(NDVI00_FVG, main="NDVI 2000")
 levelplot(NDVI10_FVG, main="NDVI 2010")
 levelplot(NDVI20_FVG, main="NDVI 2020")
@@ -1362,19 +1360,12 @@ cl <- colorRampPalette(c('darkred','white','darkblue'))(100) #negative value wil
 #that means that red is where the NDVI decreased during related to 2000s while blue is where the NDVI improved
 plot(dif_NDVI10.00, col=cl)
 
-
-
-
-
 ### Difference of NDVI between 2020 and 2000 
 dif_NDVI <- NDVI20_FVG - NDVI00_FVG
-cl <- colorRampPalette(c('darkred','white','darkblue'))(100) #negative value will have red colour, positive ones will be blue
-#that means that red is where the NDVI decreased during related to 2000s while blue is where the NDVI improved
 plot(dif_NDVI, col=cl)
 
 ### Difference of NDVI between 2020 and 2010 
 dif_NDVI20.10 <- NDVI20_FVG - NDVI10_FVG
-cl <- colorRampPalette(c('darkred','white','darkblue'))(100)
 plot(dif_NDVI20.10, col=cl)
 
 pdf("dif_NDVI.pdf")
@@ -1396,29 +1387,22 @@ FCOVER20 <- raster("c_gls_FCOVER-RT2_202005100000_GLOBE_PROBAV_V2.0.1.nc")
 proj4string(FCOVER20)
 extshp <- spTransform(FVG_shp, proj4string(FCOVER20)) 
 FCOVER20_FVG <- mask(crop(FCOVER20, extent(extshp)), extshp)
-
 plot(FCOVER20_FVG)
-
 #
-
 FCOVER00 <- raster("c_gls_FCOVER_200005100000_GLOBE_VGT_V2.0.2.nc")
 #plot(FCOVER00)
 
 proj4string(FCOVER00)
 extshp <- spTransform(FVG_shp, proj4string(FCOVER00)) 
 FCOVER00_FVG <- mask(crop(FCOVER00, extent(extshp)), extshp)
-
 plot(FCOVER00_FVG)
-
 #
-
 FCOVER10 <- raster("c_gls_FCOVER_201005100000_GLOBE_VGT_V2.0.1.nc")
 #plot(FCOVER10)
 
 proj4string(FCOVER10)
 extshp <- spTransform(FVG_shp, proj4string(FCOVER10)) 
 FCOVER10_FVG <- mask(crop(FCOVER10, extent(extshp)), extshp)
-
 plot(FCOVER10_FVG)
 
 pdf("FCOVER.multitemp.pdf")
@@ -1454,12 +1438,9 @@ levelplot(FCOVER00_FVG)
 #####let's take a look to the rainfall condition during our satellite images
 
 setwd("/Users/giacomotrotta/lab_exam/meteo/")
-meteo <- read_excel("/USers/giacomotrotta/lab_exam/meteo/meteo.xlsx") #to read data from an excel
-View(meteo)                                                              
-
+meteo <- read_excel("/USers/giacomotrotta/lab_exam/meteo/meteo.xlsx") #to read data from an excel                                                            
 attach(meteo) #to use this dataset
 head(meteo) #to see the name of the columns
-
 
 par(mfrow=c(1,3))
 plot(Data, mar_00)
@@ -1485,6 +1466,14 @@ plot(Data, mag_10)
 model_mag_10 <- mean(mag_10)
 plot(Data, mag_20)
 model_mag_20 <- mean(mag_20)
+
+par(mfrow=c(1,3))
+plot(Data, giu_00)
+model_giu_00 <- mean(giu_00)
+plot(Data, giu_10)
+model_giu_10 <- mean(giu_10)
+plot(Data, mag_20)
+model_giu_20 <- mean(giu_20)
 
 #it's not a very nice graphs, let's prettify it with ggplot
 
@@ -1513,6 +1502,15 @@ mag_20_gg <- ggplot(meteo, aes(Data, mag_20)) + geom_point() + geom_abline(inter
 
 pdf("mag.pdf")
 grid.arrange(mag_00_gg, mag_10_gg, mag_20_gg, ncol=3)
+dev.off()
+
+#
+giu_00_gg <- ggplot(meteo, aes(Data, giu_00)) + geom_point() + geom_abline(intercept = model_giu_00, slope = 0, color = "red", size=2 ) + coord_cartesian(ylim=c(0,430)) + labs(title = "June 2000", y="Rainfall (total mm)", x="Sample")
+giu_10_gg <- ggplot(meteo, aes(Data, giu_10)) + geom_point() + geom_abline(intercept = model_giu_10, slope = 0, color = "red", size=2 ) + coord_cartesian(ylim=c(0,430)) + labs(title = "June 2010", y=" ", x="Sample")
+giu_20_gg <- ggplot(meteo, aes(Data, giu_20)) + geom_point() + geom_abline(intercept = model_giu_20, slope = 0, color = "red", size=2 ) + coord_cartesian(ylim=c(0,430)) + labs(title = "June 2020", y=" ", x="Sample")
+
+pdf("giu.pdf")
+grid.arrange(giu_00_gg, giu_10_gg, giu_20_gg, ncol=3)
 dev.off()
 
 ###################################################################################################
